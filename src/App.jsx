@@ -85,16 +85,17 @@ export default function App() {
 
   if (screen === "home") {
     return (
-      <div className="min-h-screen bg-background flex justify-center items-center p-0 md:p-6" style={{ fontFamily: "Outfit, sans-serif", background: "linear-gradient(135deg, #020b18 0%, #0d203d 100%)" }}>
+      <div className="min-h-screen bg-background flex flex-col justify-center items-center p-0 md:p-6" style={{ fontFamily: "Outfit, sans-serif", background: "linear-gradient(135deg, #020b18 0%, #0d203d 100%)" }}>
         <div className="w-full max-w-[1024px] min-h-screen md:min-h-[700px] md:h-[80vh] rounded-none md:rounded-3xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col md:flex-row relative bg-background">
           <HomeScreen onStart={() => setScreen("menu")} onSchedule={() => { setDelivery("reserve"); setScreen("menu"); }} />
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex justify-center items-center p-0 md:p-6" style={{ fontFamily: "Outfit, sans-serif", background: "linear-gradient(135deg, #020b18 0%, #0d203d 100%)" }}>
+    <div className="min-h-screen bg-background flex flex-col justify-center items-center p-0 md:p-6" style={{ fontFamily: "Outfit, sans-serif", background: "linear-gradient(135deg, #020b18 0%, #0d203d 100%)" }}>
       <div className="w-full max-w-[1024px] min-h-screen md:min-h-[700px] md:h-[80vh] rounded-none md:rounded-3xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col md:flex-row relative bg-background">
         
         {/* Left Column: Menu Screen */}
@@ -136,6 +137,24 @@ export default function App() {
         </div>
 
       </div>
+      <Footer />
     </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="w-full flex flex-col sm:flex-row items-center justify-center gap-3 py-6 px-6 text-xs text-white/50 font-medium tracking-wide">
+      <span>© {new Date().getFullYear()} Coche Comedor. Todos los derechos reservados.</span>
+      <span className="hidden sm:inline text-white/20">•</span>
+      <div className="flex items-center gap-2">
+        <span>Desarrollado por:</span>
+        <img
+          src="/logo-marca/Logo L&L blanco.png"
+          alt="L&L Logo"
+          className="h-8 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+        />
+      </div>
+    </footer>
   );
 }
