@@ -17,7 +17,7 @@ export default function OrderApp() {
   const menuItems = menuByRecorrido[Number(id)] ?? menuByRecorrido[1];
 
   const [screen, setScreen] = useState("menu");
-  const [category, setCategory] = useState("Cafeteria");
+  const [category, setCategory] = useState("Bebidas");
   const [cart, setCart] = useState([]);
   const [delivery, setDelivery] = useState(initialDelivery);
   const [payment, setPayment] = useState(null);
