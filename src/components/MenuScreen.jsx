@@ -1,6 +1,5 @@
 import React from "react";
 import { ShoppingCart, Plus, Minus, ChevronLeft, MapPin, Clock, ChevronRight, Coffee, Utensils, Wine, Soup } from "lucide-react";
-import { menuItems } from "../constants/menu";
 
 const categoryIcons = {
   Cafeteria: <Coffee size={14} />,
@@ -10,6 +9,7 @@ const categoryIcons = {
 };
 
 export default function MenuScreen({
+  menuItems,
   category, setCategory, delivery, setDelivery,
   totalItems, addToCart, removeFromCart, getQty,
   onBack, onCheckout
