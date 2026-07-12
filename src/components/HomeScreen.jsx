@@ -2,7 +2,7 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronRight, Clock, ArrowLeft, Train } from "lucide-react";
 import { recorridos } from "../constants/recorridos";
-import logoImg from "../imports/Logo_Coche_Comedor_con_tren.png";
+import logoImg from "../imports/Logo-Coche-Comedor-con-tren.png";
 
 export default function HomeScreen() {
   const { id } = useParams();
