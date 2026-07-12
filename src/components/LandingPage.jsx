@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Train, MapPin } from "lucide-react";
 import { recorridos } from "../constants/recorridos";
-import logoImg from "../imports/Logo_Coche_Comedor_con_tren.png";
+import logoImg from "../imports/Logo-Coche-Comedor-con-tren.png";
 
 export default function LandingPage() {
   const navigate = useNavigate();
