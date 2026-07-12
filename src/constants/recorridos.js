@@ -19,11 +19,6 @@ export const recorridos = [
     imagen: LOGO_TREN,
   },
   {
-    id: 2,
-    nombre: "Buenos Aires - Gral. Guido - Divisadero de Pinamar",
-    imagen: LOGO_TREN,
-  },
-  {
     id: 3,
     nombre: "Buenos Aires - Bragado",
     imagen: LOGO_TREN,
@@ -34,23 +29,8 @@ export const recorridos = [
     imagen: LOGO_TREN,
   },
   {
-    id: 5,
-    nombre: "Buenos Aires - Justo Daract",
-    imagen: LOGO_TREN,
-  },
-  {
     id: 6,
     nombre: "Buenos Aires - Rosario",
-    imagen: LOGO_TREN,
-  },
-  {
-    id: 7,
-    nombre: "Buenos Aires - Córdoba",
-    imagen: LOGO_TREN,
-  },
-  {
-    id: 8,
-    nombre: "Buenos Aires - Tucumán",
     imagen: LOGO_TREN,
   },
 ];

@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Check } from "lucide-react";
+import { Mail } from "lucide-react";
 import MenuScreen from "./MenuScreen";
 import CheckoutScreen from "./CheckoutScreen";
 import { menuByRecorrido } from "../constants/menu";
-import { sendOrderEmail } from "../services/email";
+import { recorridos } from "../constants/recorridos";
+import { sendClientConfirmationEmail } from "../services/email";
 
 export default function OrderApp() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const initialDelivery = searchParams.get("delivery");
+  const recorrido = recorridos.find((r) => r.id === Number(id));
+  const recorridoName = recorrido ? recorrido.nombre : "Recorrido";
 
-  // Menú del recorrido actual (independiente por recorrido)
+  const initialDelivery = searchParams.get("delivery");
   const menuItems = menuByRecorrido[Number(id)] ?? menuByRecorrido[1];
 
   const [screen, setScreen] = useState("menu");
@@ -24,6 +26,7 @@ export default function OrderApp() {
   const [seatNumber, setSeatNumber] = useState("");
   const [cocheNumber, setCocheNumber] = useState("");
   const [timeSlot, setTimeSlot] = useState(null);
+  const [clientEmail, setClientEmail] = useState("");
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [cashAmount, setCashAmount] = useState("");
 
@@ -50,12 +53,29 @@ export default function OrderApp() {
     });
   }
 
+  const resetApp = () => {
+    setCart([]);
+    setDelivery(null);
+    setPayment(null);
+    setSeatNumber("");
+    setCocheNumber("");
+    setTimeSlot(null);
+    setClientEmail("");
+    setCashAmount("");
+  };
+
   function getQty(id) {
     return cart.find((c) => c.id === id)?.qty ?? 0;
   }
 
   function handlePlaceOrder() {
-    sendOrderEmail({
+    // ID único del pedido (para marcar como usado en localStorage)
+    const orderId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    // Codificar los datos del pedido en base64 para el link de confirmación
+    const orderData = {
+      orderId,
+      expiresAt: Date.now() + 15 * 60 * 1000, // expira en 15 minutos
       cart,
       delivery,
       payment,
@@ -64,15 +84,23 @@ export default function OrderApp() {
       timeSlot,
       totalPrice,
       cashAmount,
-    });
+      clientEmail,
+      recorridoName,
+    };
+
+    const encoded = encodeURIComponent(btoa(JSON.stringify(orderData)));
+    const confirmUrl = `${window.location.origin}/confirmar?d=${encoded}`;
+
+    sendClientConfirmationEmail({ orderData, confirmUrl });
     setOrderPlaced(true);
-    setTimeout(() => {
-      navigate("/");
-    }, 3500);
   }
+
+
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail.trim());
 
   const canCheckout =
     payment !== null &&
+    isEmailValid &&
     (delivery === "seat"
       ? seatNumber.trim().length > 0 && cocheNumber.trim().length > 0
       : delivery === "reserve"
@@ -82,48 +110,55 @@ export default function OrderApp() {
       ? cashAmount.trim() !== "" && Number(cashAmount) >= totalPrice
       : true);
 
-  // ── Confirmación ──────────────────────────────────────────────────────────
+  // ── Pantalla de Confirmación Simplificada ──────────────────────────────────
   if (orderPlaced) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center gap-6 px-8"
+        className="min-h-screen flex flex-col items-center justify-center gap-6 px-8 text-center"
         style={{
           fontFamily: "Outfit, sans-serif",
           background: "linear-gradient(135deg, #091f41 0%, #1a5a9e 100%)",
         }}
       >
-        <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center">
-          <Check size={40} className="text-white" />
+        <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
+          <Mail size={40} className="text-white" />
         </div>
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            ¡Pedido confirmado!
+        <div className="max-w-md">
+          <h2 className="text-2xl font-bold text-white mb-2">
+            ¡Valida tu pedido!
           </h2>
-          <p className="text-white/70 text-sm leading-relaxed">
-            {delivery === "seat"
-              ? `Tu pedido será llevado al coche ${cocheNumber}, asiento ${seatNumber} en breve.`
-              : `Tu pedido estará listo para retirar en la barra del Coche Comedor ${timeSlot}.`}
+          <p className="text-white/80 text-sm leading-relaxed mb-6">
+            Te enviamos un correo a <strong className="text-white">{clientEmail}</strong>.<br />
+            Ingresá a tu bandeja de entrada y confirmalo para validar tu pedido.
           </p>
+          <button
+            onClick={() => {
+              resetApp();
+              navigate("/");
+            }}
+            className="bg-white text-primary font-semibold text-sm px-6 py-3 rounded-xl shadow-lg hover:bg-white/90 active:scale-95 transition-all cursor-pointer"
+          >
+            Entendido
+          </button>
         </div>
-        <p className="text-white/50 text-xs">Redirigiendo...</p>
       </div>
     );
   }
 
-  // ── Menu + Checkout ───────────────────────────────────────────────────────
+  // ── Menu + Checkout (Contenedor que fluye naturalmente en mobile) ──────────
   return (
     <div
-      className="min-h-screen bg-background flex flex-col justify-center items-center p-0 md:p-6"
+      className="min-h-screen bg-background flex flex-col justify-center items-center p-0 md:p-6 pb-4 md:pb-6"
       style={{
         fontFamily: "Outfit, sans-serif",
         background: "linear-gradient(135deg, #020b18 0%, #0d203d 100%)",
       }}
     >
-      <div className="w-full max-w-[1024px] min-h-screen md:min-h-[700px] md:h-[80vh] rounded-none md:rounded-3xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col md:flex-row relative bg-background">
+      <div className="w-full max-w-[1024px] rounded-none md:rounded-3xl shadow-2xl shadow-black/50 md:h-[80vh] md:overflow-hidden flex flex-col md:flex-row relative bg-background">
         {/* Left Column: Menu */}
         <div
-          className={`flex-1 flex flex-col h-full ${
-            screen === "checkout" ? "hidden md:flex" : "flex"
+          className={`flex-1 flex flex-col md:overflow-hidden ${
+            screen === "checkout" ? "hidden" : "flex"
           }`}
         >
           <MenuScreen
@@ -143,13 +178,14 @@ export default function OrderApp() {
 
         {/* Right Column: Checkout */}
         <div
-          className={`w-full md:w-[400px] md:border-l border-border flex flex-col h-full ${
-            screen === "menu" ? "hidden md:flex" : "flex"
+          className={`flex-1 flex flex-col md:overflow-hidden ${
+            screen === "menu" ? "hidden" : "flex"
           }`}
         >
           <CheckoutScreen
             cart={cart}
             delivery={delivery}
+            setDelivery={setDelivery}
             payment={payment}
             setPayment={setPayment}
             seatNumber={seatNumber}
@@ -164,9 +200,12 @@ export default function OrderApp() {
             onPlace={handlePlaceOrder}
             cashAmount={cashAmount}
             setCashAmount={setCashAmount}
+            clientEmail={clientEmail}
+            setClientEmail={setClientEmail}
           />
         </div>
       </div>
+
       <Footer />
     </div>
   );
