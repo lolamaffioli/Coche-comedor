@@ -99,13 +99,9 @@ const menuBaseConIds = asignarIds(menuBase);
 
 export const menuByRecorrido = {
   1: clonarMenu(menuBaseConIds), // Recorrido 1 — Buenos Aires - Mar del Plata
-  2: clonarMenu(menuBaseConIds), // Recorrido 2 — Buenos Aires - Pinamar
-  3: clonarMenu(menuBaseConIds), // Recorrido 3 — Buenos Aires - Bragado
-  4: clonarMenu(menuBaseConIds), // Recorrido 4 — Buenos Aires - Junín
-  5: clonarMenu(menuBaseConIds), // Recorrido 5 — Buenos Aires - Justo Daract
-  6: clonarMenu(menuBaseConIds), // Recorrido 6 — Buenos Aires - Rosario
-  7: clonarMenu(menuBaseConIds), // Recorrido 7 — Buenos Aires - Córdoba
-  8: clonarMenu(menuBaseConIds), // Recorrido 8 — Buenos Aires - Tucumán
+  2: clonarMenu(menuBaseConIds), // Recorrido 3 — Buenos Aires - Bragado
+  3: clonarMenu(menuBaseConIds), // Recorrido 4 — Buenos Aires - Junín
+  4: clonarMenu(menuBaseConIds), // Recorrido 6 — Buenos Aires - Rosario
 };
 
 // Exportamos también el menú base por compatibilidad
