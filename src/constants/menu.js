@@ -99,7 +99,7 @@ const menuMarDelPlata = {
 const menuBragado = {
   Bebidas: [
     { id: 101, codigo: "101", name: "Agua mineral",                desc: "Agua mineral sin gas, 500 ml",                      price: 1500, img: "/Comida/Bebidas/agua.png" },
-    { id: 102, codigo: "102", name: "Agua saborizada",             desc: "Agua saborizada sabor naranja, 500 ml",             price: 2000, img: "/Comida/Bebidas/jugo de fruta.png" },
+    { id: 102, codigo: "102", name: "Agua saborizada",             desc: "Agua saborizada sabor naranja, 500 ml",             price: 2000, img: "/Comida/Bebidas/linea naranja.png" },
     { id: 103, codigo: "103", name: "Linea Cola",                  desc: "Gaseosa de Cola sabor original, 500 ml",            price: 3500, img: "/Comida/Bebidas/linea cola.png" },
   //  { id: 104, codigo: "104", name: "Linea Cola Light/Zero",       desc: "Gaseosa de Cola light/zero, 500 ml",                price: 3500, img: "/Comida/Bebidas/linea cola light.png" },
     { id: 105, codigo: "105", name: "Linea Lima Limón",            desc: "Gaseosa de Lima Limón sabor original, 500 ml",      price: 3500, img: "/Comida/Bebidas/Lima limon.png" },
