@@ -10,7 +10,8 @@ export function sendClientConfirmationEmail({ orderData, confirmUrl }) {
 
   const productsText = cart.map(item => {
     const cod = item.codigo ? `[COD ${item.codigo}]` : `[ID ${item.id}]`;
-    return `${item.qty}x ${item.name} ${cod} - $${(item.price * item.qty).toLocaleString()}`;
+    const heating = item.caliente !== undefined ? ` (${item.caliente ? "Caliente" : "Frío"})` : "";
+    return `${item.qty}x ${item.name}${heating} ${cod} - $${(item.price * item.qty).toLocaleString()}`;
   }).join("\n");
 
   const templateParams = {
@@ -37,12 +38,13 @@ export function sendClientConfirmationEmail({ orderData, confirmUrl }) {
 }
 
 export function sendStaffOrderEmail(orderData) {
-  const { cart, delivery, payment, seatNumber, cocheNumber, timeSlot, totalPrice, cashAmount, clientEmail, recorridoName } = orderData;
+  const { cart, delivery, payment, seatNumber, cocheNumber, totalPrice, cashAmount, clientEmail, recorridoName } = orderData;
   const change = Number(cashAmount) - totalPrice;
 
   const productsText = cart.map(item => {
     const cod = item.codigo ? `[COD ${item.codigo}]` : `[ID ${item.id}]`;
-    return `${item.qty}x ${item.name} ${cod} - $${(item.price * item.qty).toLocaleString()}`;
+    const heating = item.caliente !== undefined ? ` (${item.caliente ? "Caliente" : "Frío"})` : "";
+    return `${item.qty}x ${item.name}${heating} ${cod} - $${(item.price * item.qty).toLocaleString()}`;
   }).join("\n");
 
   const templateParams = {

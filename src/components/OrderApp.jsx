@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Mail } from "lucide-react";
+import { Mail, Flame } from "lucide-react";
 import MenuScreen from "./MenuScreen";
 import CheckoutScreen from "./CheckoutScreen";
 import { menuByRecorrido } from "../constants/menu";
@@ -29,27 +29,47 @@ export default function OrderApp() {
   const [clientEmail, setClientEmail] = useState("");
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [cashAmount, setCashAmount] = useState("");
+  const [heatingItem, setHeatingItem] = useState(null);
 
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
   const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
+  const needsHeatingOption = (item) => {
+    const nameLower = item.name.toLowerCase();
+    return nameLower.includes("medialuna") || nameLower.includes("pebete");
+  };
+
   function addToCart(item) {
+    if (needsHeatingOption(item)) {
+      setHeatingItem(item);
+    } else {
+      performAddToCart(item);
+    }
+  }
+
+  function performAddToCart(item, caliente) {
+    const cartItemId = caliente !== undefined ? `${item.id}-${caliente ? "caliente" : "frio"}` : String(item.id);
     setCart((prev) => {
-      const existing = prev.find((c) => c.id === item.id);
+      const existing = prev.find((c) => c.cartItemId === cartItemId);
       if (existing)
         return prev.map((c) =>
-          c.id === item.id ? { ...c, qty: c.qty + 1 } : c
+          c.cartItemId === cartItemId ? { ...c, qty: c.qty + 1 } : c
         );
-      return [...prev, { ...item, qty: 1 }];
+      return [...prev, { ...item, cartItemId, caliente, qty: 1 }];
     });
   }
 
   function removeFromCart(id) {
     setCart((prev) => {
-      const existing = prev.find((c) => c.id === id);
-      if (!existing || existing.qty === 1)
-        return prev.filter((c) => c.id !== id);
-      return prev.map((c) => (c.id === id ? { ...c, qty: c.qty - 1 } : c));
+      const existingIndex = prev.map((c) => c.id).lastIndexOf(id);
+      if (existingIndex === -1) return prev;
+      const existing = prev[existingIndex];
+      if (existing.qty === 1) {
+        return prev.filter((_, idx) => idx !== existingIndex);
+      }
+      return prev.map((c, idx) =>
+        idx === existingIndex ? { ...c, qty: c.qty - 1 } : c
+      );
     });
   }
 
@@ -65,7 +85,7 @@ export default function OrderApp() {
   };
 
   function getQty(id) {
-    return cart.find((c) => c.id === id)?.qty ?? 0;
+    return cart.filter((c) => c.id === id).reduce((s, c) => s + c.qty, 0);
   }
 
   function handlePlaceOrder() {
@@ -205,6 +225,49 @@ export default function OrderApp() {
           />
         </div>
       </div>
+
+      {/* ── Modal de Calentado ── */}
+      {heatingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-sm p-4 transition-all duration-300">
+          <div className="bg-card border border-border w-full max-w-sm rounded-[24px] p-6 shadow-2xl flex flex-col items-center gap-5 text-center transform scale-100 transition-all">
+            <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 animate-bounce">
+              <Flame size={28} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-1.5">¿Querés calentarlo?</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Elegí si preferís que calentemos tu {heatingItem.name.toLowerCase().includes("medialuna") ? "medialuna" : "pebete"} antes de entregártelo.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 w-full mt-2">
+              <button
+                onClick={() => {
+                  performAddToCart(heatingItem, true);
+                  setHeatingItem(null);
+                }}
+                className="py-3.5 rounded-xl text-sm font-semibold bg-accent text-white hover:bg-accent/90 active:scale-95 transition-all cursor-pointer text-center"
+              >
+                Sí, caliente 🔥
+              </button>
+              <button
+                onClick={() => {
+                  performAddToCart(heatingItem, false);
+                  setHeatingItem(null);
+                }}
+                className="py-3.5 rounded-xl text-sm font-semibold bg-secondary text-primary hover:bg-secondary/80 active:scale-95 transition-all cursor-pointer text-center"
+              >
+                No, frío ❄️
+              </button>
+            </div>
+            <button
+              onClick={() => setHeatingItem(null)}
+              className="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors mt-1 cursor-pointer"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

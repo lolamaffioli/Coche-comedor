@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronRight, Clock, ArrowLeft, Train } from "lucide-react";
 import { recorridos } from "../constants/recorridos";

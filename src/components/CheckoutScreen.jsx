@@ -1,4 +1,3 @@
-import React from "react";
 import { ChevronLeft, CreditCard, Banknote, Check, Mail, MapPin, Clock } from "lucide-react";
 import { timeSlots } from "../constants/menu";
 
@@ -35,11 +34,16 @@ export default function CheckoutScreen({
           ) : (
             <div className="flex flex-col gap-2">
               {cart.map((item) => (
-                <div key={item.id} className="flex justify-between items-center gap-4">
+                <div key={item.cartItemId || item.id} className="flex justify-between items-center gap-4">
                   <div className="text-sm text-foreground flex flex-col min-w-0">
                     <span className="truncate">
                       {item.qty > 1 && <span className="font-semibold text-accent mr-1">{item.qty}×</span>}
                       {item.name}
+                      {item.caliente !== undefined && (
+                        <span className="text-xs text-amber-600 dark:text-amber-400 ml-1.5 font-medium">
+                          ({item.caliente ? "Caliente" : "Frío"})
+                        </span>
+                      )}
                     </span>
                     {item.codigo && <span className="text-[10px] font-mono text-muted-foreground">COD {item.codigo}</span>}
                   </div>

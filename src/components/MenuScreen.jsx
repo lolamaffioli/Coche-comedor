@@ -1,4 +1,3 @@
-import React from "react";
 import { ShoppingCart, Plus, Minus, ChevronLeft, MapPin, Clock, ChevronRight, Coffee, Utensils, Wine, Cookie, Leaf, BookOpen, Tag } from "lucide-react";
 
 const CATEGORIES = [
@@ -109,8 +108,16 @@ export default function MenuScreen({
                 <div className="px-5 pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-3">
                   {items.map((item) => {
                     const qty = getQty(item.id);
+                    const isOutOfStock = item.outOfStock;
                     return (
-                      <div key={item.id} className="bg-card rounded-2xl border border-border overflow-hidden flex h-28 shadow-sm hover:border-accent/20 transition-colors">
+                      <div
+                        key={item.id}
+                        className={`bg-card rounded-2xl border border-border overflow-hidden flex h-28 shadow-sm transition-colors ${
+                          isOutOfStock
+                            ? "opacity-50 grayscale pointer-events-none bg-secondary/20"
+                            : "hover:border-accent/20"
+                        }`}
+                      >
                         <div className="w-28 h-28 flex-shrink-0 bg-white flex items-center justify-center p-1">
                           <img src={item.img} alt={item.name} className="w-full h-full object-contain" />
                         </div>
@@ -128,7 +135,11 @@ export default function MenuScreen({
                                 </span>
                               )}
                             </div>
-                            {qty === 0 ? (
+                            {isOutOfStock ? (
+                              <span className="text-xs font-semibold text-muted-foreground bg-secondary/40 px-2.5 py-1.5 rounded-lg border border-border/20">
+                                No disponible
+                              </span>
+                            ) : qty === 0 ? (
                               <button onClick={() => addToCart(item)} className="w-7 h-7 rounded-full bg-primary flex items-center justify-center active:scale-90 transition-transform cursor-pointer">
                                 <Plus size={14} className="text-white" />
                               </button>

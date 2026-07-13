@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Check, Loader, AlertTriangle, Clock } from "lucide-react";
 import { sendStaffOrderEmail } from "../services/email";
@@ -28,34 +28,34 @@ function markOrderConfirmed(orderId) {
 export default function ConfirmOrderPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [now] = useState(() => Date.now());
 
-  const [orderData, setOrderData] = useState(null);
-  const [status, setStatus] = useState("idle"); // idle | sending | success | already_confirmed | expired | invalid | error
-
-  useEffect(() => {
+  const [orderData] = useState(() => {
     const raw = searchParams.get("d");
-    if (!raw) { setStatus("invalid"); return; }
+    if (!raw) return null;
+    try {
+      return JSON.parse(atob(decodeURIComponent(raw)));
+    } catch {
+      return null;
+    }
+  });
 
+  const [status, setStatus] = useState(() => {
+    const raw = searchParams.get("d");
+    if (!raw) return "invalid";
     try {
       const decoded = JSON.parse(atob(decodeURIComponent(raw)));
-
-      // Verificar expiración (15 minutos)
       if (decoded.expiresAt && Date.now() > decoded.expiresAt) {
-        setStatus("expired");
-        return;
+        return "expired";
       }
-
-      // Verificar si ya fue confirmado en este dispositivo
       if (decoded.orderId && isOrderConfirmed(decoded.orderId)) {
-        setStatus("already_confirmed");
-        return;
+        return "already_confirmed";
       }
-
-      setOrderData(decoded);
+      return "idle";
     } catch {
-      setStatus("invalid");
+      return "invalid";
     }
-  }, []);
+  });
 
   function handleConfirm() {
     if (!orderData) return;
@@ -172,7 +172,7 @@ export default function ConfirmOrderPage() {
   const change = Number(cashAmount) - totalPrice;
 
   // Tiempo restante
-  const minutosRestantes = expiresAt ? Math.max(0, Math.ceil((expiresAt - Date.now()) / 60000)) : null;
+  const minutosRestantes = expiresAt ? Math.max(0, Math.ceil((expiresAt - now) / 60000)) : null;
 
   return (
     <div
@@ -205,6 +205,11 @@ export default function ConfirmOrderPage() {
                     <span className="text-sm text-foreground truncate">
                       {item.qty > 1 && <span className="font-semibold text-accent mr-1">{item.qty}×</span>}
                       {item.name}
+                      {item.caliente !== undefined && (
+                        <span className="text-xs text-amber-600 dark:text-amber-400 ml-1.5 font-medium">
+                          ({item.caliente ? "Caliente" : "Frío"})
+                        </span>
+                      )}
                     </span>
                     {item.codigo && <span className="text-[10px] font-mono text-muted-foreground">COD {item.codigo}</span>}
                   </div>
