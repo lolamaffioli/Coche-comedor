@@ -115,7 +115,7 @@ export default function CheckoutScreen({
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Asiento N°</label>
-                  <input type="text" placeholder="Ej: 24" value={seatNumber} onChange={(e) => setSeatNumber(e.target.value.toUpperCase())} className="w-full bg-input-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-sm" maxLength={2} />
+                  <input type="text" placeholder="Ej: 24" value={seatNumber} onChange={(e) => setSeatNumber(e.target.value.replace(/\D/g, ""))} className="w-full bg-input-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-sm" maxLength={2} />
                 </div>
               </div>
               <div className="bg-secondary rounded-2xl p-4 flex gap-4 items-start border border-border/50">

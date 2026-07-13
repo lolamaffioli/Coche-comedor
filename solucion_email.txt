@@ -1,0 +1,135 @@
+================================================================================
+          SOLUCIÓN DEFINITIVA PARA MAILS 100% EN ESPAÑOL Y SIN PUBLICIDAD
+================================================================================
+
+¿Por qué FormSubmit sigue mandando partes en inglés y con publicidad?
+--------------------------------------------------------------------------------
+FormSubmit.co es un servicio de reenvío de formularios gratuito. Su modelo de negocio
+consiste en poner publicidad/marcas en el pie de los correos ("This email was sent from...") 
+y forzar un formato estandarizado ("Someone just submitted your form..."). 
+Incluso configurando el idioma en español, ellos controlan el diseño del wrapper de sus
+correos y añaden esos encabezados y watermarks promocionales que no se pueden eliminar 
+en la versión gratuita.
+
+Además, como el mail de validación lo enviamos directamente a la dirección del cliente,
+FormSubmit lo interpreta como si el cliente fuera el "creador" de un nuevo formulario,
+lo que puede forzar correos de activación en inglés muy molestos.
+
+
+La Solución Profesional: EMAILJS (100% Gratuito y sin marcas)
+--------------------------------------------------------------------------------
+Para tener correos corporativos impecables, en español y sin ninguna mención a terceros,
+la herramienta estándar es EmailJS (https://www.emailjs.com/). 
+Su plan gratuito permite enviar hasta 200 correos al mes, lo cual es excelente para iniciar.
+
+Pasos para configurarlo en 2 minutos:
+
+1. Registrate gratis en EmailJS (https://dashboard.emailjs.com/sign-up).
+2. Conectá tu casilla de correo (por ejemplo: cochecomedorsarmiento@gmail.com) como "Email Service".
+   Esto te dará un Service ID (ej: "service_abc123").
+3. Crea dos plantillas ("Email Templates") personalizadas en español:
+   
+   Plantilla 1: Validar Pedido (Para el Cliente)
+   -------------------------------------------------
+   Asunto: [NO ES COMPROBANTE DE PAGO] Validá tu pedido - Coche Comedor
+   Contenido de la plantilla en EmailJS (diseño libre):
+   
+   Hola,
+   Para confirmar tu pedido en el Coche Comedor, por favor hacé clic en el siguiente enlace:
+   {{confirm_url}}
+   
+   Detalles del pedido:
+   - Recorrido: {{recorrido}}
+   - Entrega: {{entrega}}
+   - Pago: {{pago}}
+   
+   Productos:
+   {{productos}}
+   
+   Total: {{total}}
+   
+   (Este email no sirve como comprobante de pago).
+   
+   Plantilla 2: Pedido Confirmado (Para el Personal del Tren)
+   -------------------------------------------------
+   Asunto: ✅ Pedido Confirmado - {{recorrido}} | {{entrega_resumen}}
+   Contenido de la plantilla:
+   
+   ¡Nuevo pedido confirmado por el cliente!
+   
+   - Cliente: {{client_email}}
+   - Recorrido: {{recorrido}}
+   - Entrega: {{entrega}}
+   - Pago: {{pago}}
+   
+   Productos:
+   {{productos}}
+   
+   Total a cobrar: {{total}}
+
+
+4. Instalación de la librería en el proyecto:
+   Ejecutá en la terminal: npm install @emailjs/browser
+
+5. Implementación del código en src/services/email.js:
+   Reemplazá el contenido de src/services/email.js por el siguiente código limpio:
+
+--------------------------------------------------------------------------------
+import emailjs from '@emailjs/browser';
+
+const SERVICE_ID = "TU_SERVICE_ID"; // Reemplazar
+const TEMPLATE_CLIENT_ID = "TU_TEMPLATE_CLIENT_ID"; // Reemplazar
+const TEMPLATE_STAFF_ID = "TU_TEMPLATE_STAFF_ID"; // Reemplazar
+const PUBLIC_KEY = "TU_PUBLIC_KEY"; // Reemplazar (se encuentra en Account > Public Key)
+
+export function sendClientConfirmationEmail({ orderData, confirmUrl }) {
+  const { clientEmail, recorridoName, cart, delivery, cocheNumber, seatNumber, timeSlot, payment, totalPrice } = orderData;
+
+  const productsText = cart.map(item => {
+    const cod = item.codigo ? `[COD ${item.codigo}]` : `[ID ${item.id}]`;
+    return `${item.qty}x ${item.name} ${cod} - $${(item.price * item.qty).toLocaleString()}`;
+  }).join("\n");
+
+  const templateParams = {
+    to_email: clientEmail,
+    confirm_url: confirmUrl,
+    recorrido: recorridoName || "No especificado",
+    entrega: delivery === "seat" ? `Llevar al Coche ${cocheNumber}, Asiento ${seatNumber}` : `Retiro por barra (Horario: ${timeSlot || "Inmediato"})`,
+    pago: payment === "cash" ? "Efectivo" : "Tarjeta Física",
+    productos: productsText,
+    total: `$${totalPrice.toLocaleString()}`,
+  };
+
+  return emailjs.send(SERVICE_ID, TEMPLATE_CLIENT_ID, templateParams, PUBLIC_KEY)
+    .then((response) => console.log('Email enviado al cliente!', response.status, response.text))
+    .catch((err) => console.error('Error al enviar al cliente:', err));
+}
+
+export function sendStaffOrderEmail(orderData) {
+  const { cart, delivery, payment, seatNumber, cocheNumber, timeSlot, totalPrice, cashAmount, clientEmail, recorridoName } = orderData;
+  const change = Number(cashAmount) - totalPrice;
+
+  const productsText = cart.map(item => {
+    const cod = item.codigo ? `[COD ${item.codigo}]` : `[ID ${item.id}]`;
+    return `${item.qty}x ${item.name} ${cod} - $${(item.price * item.qty).toLocaleString()}`;
+  }).join("\n");
+
+  const templateParams = {
+    client_email: clientEmail,
+    recorrido: recorridoName || "No especificado",
+    entrega: delivery === "seat" ? `Coche ${cocheNumber} - Asiento ${seatNumber}` : `Retirar en barra`,
+    entrega_resumen: delivery === "seat" ? `Coche ${cocheNumber} Asiento ${seatNumber}` : "Barra",
+    pago: payment === "cash" ? `Efectivo (Paga con: $${Number(cashAmount).toLocaleString()} - Vuelto: $${change >= 0 ? change.toLocaleString() : "0"})` : "Tarjeta Física",
+    productos: productsText,
+    total: `$${totalPrice.toLocaleString()}`,
+  };
+
+  return emailjs.send(SERVICE_ID, TEMPLATE_STAFF_ID, templateParams, PUBLIC_KEY)
+    .then((response) => console.log('Pedido enviado al personal!', response.status, response.text))
+    .catch((err) => console.error('Error al enviar al personal:', err));
+}
+--------------------------------------------------------------------------------
+
+Esta integración removerá por completo cualquier anuncio externo y les dará un control
+absoluto del contenido y la redacción de los correos.
+================================================================================

@@ -37,13 +37,11 @@ export default function HomeScreen() {
 
           <div className="relative z-10 flex flex-col items-center gap-2">
             {/* Logo */}
-            <div className="overflow-hidden w-[280px] h-[160px] mb-[-10px] md:w-[320px] md:h-[190px] md:mb-[-24px]">
-              <img
-                src={logoImg}
-                alt="Logo Coche Comedor"
-                className="block w-full h-auto mt-[-100px] md:mt-[-124px]"
-              />
-            </div>
+            <img
+              src={logoImg}
+              alt="Logo Coche Comedor"
+              className="w-[240px] h-auto object-contain md:w-[280px]"
+            />
             <h1
               className="text-white"
               style={{
