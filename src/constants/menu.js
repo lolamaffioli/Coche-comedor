@@ -154,7 +154,7 @@ const menuBragado = {
   ],
   Promociones: [
   //  { id: 800, codigo: "800", name: "Café con Leche + Medialunas c/Jamón y Queso", desc: "Combo café con leche y 2 medialunas con jamón y queso",    price: 3500, img: "/Comida/Promociones/Promo cafe.png" },
-    { id: 900, codigo: "900", name: "Café con leche + Medialunas",                desc: "Combo café con leche y 2 medialunas",            price: 4000, img: "/Comida/Promociones/Cafe y medialunas.png" },
+    { id: 900, codigo: "90", name: "Café con leche + Medialunas",                desc: "Combo café con leche y 2 medialunas",            price: 4000, img: "/Comida/Promociones/Cafe y medialunas.png" },
   ],
 };
 
