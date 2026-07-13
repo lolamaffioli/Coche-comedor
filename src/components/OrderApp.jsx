@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail, Flame } from "lucide-react";
 import MenuScreen from "./MenuScreen";
@@ -18,9 +18,21 @@ export default function OrderApp() {
   const initialDelivery = searchParams.get("delivery");
   const menuItems = menuByRecorrido[Number(id)] ?? menuByRecorrido[1];
 
-  const [screen, setScreen] = useState("menu");
+  const initialScreen = searchParams.get("screen") || "menu";
+  const [screen, setScreen] = useState(initialScreen);
   const [category, setCategory] = useState("Bebidas");
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`cart-${id}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(`cart-${id}`, JSON.stringify(cart));
+  }, [cart, id]);
   const [delivery, setDelivery] = useState(initialDelivery);
   const [payment, setPayment] = useState(null);
   const [seatNumber, setSeatNumber] = useState("");
@@ -114,7 +126,8 @@ export default function OrderApp() {
     };
 
     const encoded = encodeURIComponent(btoa(JSON.stringify(orderData)));
-    const confirmUrl = `${window.location.origin}/confirmar?d=${encoded}`;
+    const baseUrl = window.location.href.split("#")[0];
+    const confirmUrl = `${baseUrl}#/confirmar?d=${encoded}`;
 
     sendClientConfirmationEmail({ orderData, confirmUrl });
     setOrderPlaced(true);
