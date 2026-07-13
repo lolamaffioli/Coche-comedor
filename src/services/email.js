@@ -6,7 +6,7 @@ const TEMPLATE_STAFF_ID = "template_ew0f77h"; // Reemplazar
 const PUBLIC_KEY = "cXazMUEgRujdirhh0"; // Reemplazar (se encuentra en Account > Public Key)
 
 export function sendClientConfirmationEmail({ orderData, confirmUrl }) {
-  const { clientEmail, recorridoName, cart, delivery, cocheNumber, seatNumber, timeSlot, payment, totalPrice } = orderData;
+  const { clientEmail, recorridoName, cart, delivery, cocheNumber, seatNumber, timeSlot, payment, totalPrice, orderNumber } = orderData;
 
   const productsText = cart.map(item => {
     const cod = item.codigo ? `[COD ${item.codigo}]` : `[ID ${item.id}]`;
@@ -16,6 +16,7 @@ export function sendClientConfirmationEmail({ orderData, confirmUrl }) {
 
   const templateParams = {
     email: clientEmail,
+    nro_pedido: orderNumber ? `#${orderNumber}` : "No especificado",
     confirm_url: confirmUrl,
     recorrido: recorridoName || "No especificado",
     entrega: delivery === "seat" ? `Llevar al Coche ${cocheNumber}, Asiento ${seatNumber}` : `Retiro por barra (Horario: ${timeSlot || "Inmediato"})`,
@@ -38,7 +39,7 @@ export function sendClientConfirmationEmail({ orderData, confirmUrl }) {
 }
 
 export function sendStaffOrderEmail(orderData) {
-  const { cart, delivery, payment, seatNumber, cocheNumber, totalPrice, cashAmount, clientEmail, recorridoName } = orderData;
+  const { cart, delivery, payment, seatNumber, cocheNumber, totalPrice, cashAmount, clientEmail, recorridoName, orderNumber } = orderData;
   const change = Number(cashAmount) - totalPrice;
 
   const productsText = cart.map(item => {
@@ -49,6 +50,7 @@ export function sendStaffOrderEmail(orderData) {
 
   const templateParams = {
     client_email: clientEmail,
+    nro_pedido: orderNumber ? `#${orderNumber}` : "No especificado",
     recorrido: recorridoName || "No especificado",
     entrega: delivery === "seat" ? `Coche ${cocheNumber} - Asiento ${seatNumber}` : `Retirar en barra`,
     entrega_resumen: delivery === "seat" ? `Coche ${cocheNumber} Asiento ${seatNumber}` : "Barra",

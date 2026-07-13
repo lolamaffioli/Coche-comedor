@@ -30,6 +30,7 @@ export default function OrderApp() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [cashAmount, setCashAmount] = useState("");
   const [heatingItem, setHeatingItem] = useState(null);
+  const [orderNumber, setOrderNumber] = useState(null);
 
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
   const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -82,6 +83,7 @@ export default function OrderApp() {
     setTimeSlot(null);
     setClientEmail("");
     setCashAmount("");
+    setOrderNumber(null);
   };
 
   function getQty(id) {
@@ -91,10 +93,13 @@ export default function OrderApp() {
   function handlePlaceOrder() {
     // ID único del pedido (para marcar como usado en localStorage)
     const orderId = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const generatedOrderNumber = Math.floor(1000 + Math.random() * 9000);
+    setOrderNumber(generatedOrderNumber);
 
     // Codificar los datos del pedido en base64 para el link de confirmación
     const orderData = {
       orderId,
+      orderNumber: generatedOrderNumber,
       expiresAt: Date.now() + 15 * 60 * 1000, // expira en 15 minutos
       cart,
       delivery,
@@ -150,6 +155,16 @@ export default function OrderApp() {
           <p className="text-white/80 text-sm leading-relaxed mb-6">
             Te enviamos un correo a <strong className="text-white">{clientEmail}</strong>.<br />
             Ingresá a tu bandeja de entrada y confirmalo para validar tu pedido.
+            {orderNumber && (
+              <>
+                <span className="block mt-4 text-amber-300 font-bold text-lg tracking-wide bg-white/10 py-2 rounded-xl border border-white/10">
+                  N° de pedido: #{orderNumber}
+                </span>
+                <span className="block text-xs text-white/60 mt-1 font-medium">
+                  (Por favor, guardá este número hasta recibir tu pedido)
+                </span>
+              </>
+            )}
           </p>
           <button
             onClick={() => {
