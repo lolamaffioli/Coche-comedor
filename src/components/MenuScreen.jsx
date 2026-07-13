@@ -1,4 +1,5 @@
-import { ShoppingCart, Plus, Minus, ChevronLeft, MapPin, Clock, ChevronRight, Coffee, Utensils, Wine, Cookie, Leaf, BookOpen, Tag } from "lucide-react";
+import { useState } from "react";
+import { ShoppingCart, Plus, Minus, ChevronLeft, MapPin, Clock, ChevronRight, Coffee, Utensils, Wine, Cookie, Leaf, BookOpen, Tag, XCircle, AlertTriangle, X } from "lucide-react";
 
 const CATEGORIES = [
   { key: "Bebidas",          label: "Bebidas",                     icon: <Wine size={14} /> },
@@ -25,6 +26,36 @@ export default function MenuScreen({
     onCheckout();
   };
 
+  // ── Estado del modal de arrepentimiento ──
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelEmail, setCancelEmail] = useState("");
+  const [cancelOrderNum, setCancelOrderNum] = useState("");
+  const [cancelSubmitted, setCancelSubmitted] = useState(false);
+  const [cancelError, setCancelError] = useState("");
+
+  function handleCancelSubmit(e) {
+    e.preventDefault();
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cancelEmail.trim());
+    if (!emailValid) {
+      setCancelError("Por favor ingresá un mail válido.");
+      return;
+    }
+    if (!cancelOrderNum.trim()) {
+      setCancelError("Por favor ingresá el número de pedido.");
+      return;
+    }
+    setCancelError("");
+    setCancelSubmitted(true);
+  }
+
+  function closeCancelModal() {
+    setShowCancelModal(false);
+    setCancelEmail("");
+    setCancelOrderNum("");
+    setCancelSubmitted(false);
+    setCancelError("");
+  }
+
   return (
     <div className="flex flex-col md:h-full md:overflow-y-auto bg-background/50 scroll-smooth pb-0">
 
@@ -38,6 +69,15 @@ export default function MenuScreen({
             <ChevronLeft size={18} className="text-white" />
           </button>
           <h2 className="text-white font-semibold text-lg flex-1">Menú del Tren</h2>
+          {/* Botón arrepentimiento en el header */}
+          <button
+            onClick={() => setShowCancelModal(true)}
+            className="flex items-center gap-1.5 bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 rounded-full px-3 py-1.5 transition-all active:scale-95 cursor-pointer"
+            title="Arrepentimiento de compra"
+          >
+            <XCircle size={13} className="text-red-400" />
+            <span className="text-red-400 text-xs font-semibold">Cancelar compra</span>
+          </button>
           {totalItems > 0 && (
             <div className="flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 md:hidden">
               <ShoppingCart size={14} className="text-white" />
@@ -179,6 +219,97 @@ export default function MenuScreen({
             <span className="font-semibold">Ir a pagar</span>
             <ChevronRight size={18} className="text-white/70" />
           </button>
+        </div>
+      )}
+
+      {/* ── Modal de Arrepentimiento de Compra ── */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-card border border-red-500/30 w-full max-w-sm rounded-[24px] p-6 shadow-2xl flex flex-col gap-5 relative">
+            {/* Close button */}
+            <button
+              onClick={closeCancelModal}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-border transition-colors cursor-pointer"
+            >
+              <X size={15} className="text-muted-foreground" />
+            </button>
+
+            {cancelSubmitted ? (
+              /* ── Estado: Solicitud enviada ── */
+              <div className="flex flex-col items-center gap-4 text-center py-2">
+                <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <XCircle size={36} className="text-red-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground mb-1">Solicitud recibida</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Recibimos tu solicitud de arrepentimiento de compra para el pedido <strong className="text-foreground">#{cancelOrderNum}</strong>.
+                    Nos contactaremos a <strong className="text-foreground">{cancelEmail}</strong> para gestionar la cancelación.
+                  </p>
+                </div>
+                <button
+                  onClick={closeCancelModal}
+                  className="w-full py-3 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600 active:scale-95 transition-all cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              /* ── Formulario ── */
+              <>
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <AlertTriangle size={24} className="text-red-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-foreground leading-tight">Arrepentimiento de compra</h3>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      Completá los datos de tu pedido para iniciar la cancelación.
+                    </p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleCancelSubmit} className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                      Mail del cliente
+                    </label>
+                    <input
+                      type="email"
+                      value={cancelEmail}
+                      onChange={(e) => { setCancelEmail(e.target.value); setCancelError(""); }}
+                      placeholder="tu@mail.com"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-red-500/60 transition-colors"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                      Número de pedido
+                    </label>
+                    <input
+                      type="text"
+                      value={cancelOrderNum}
+                      onChange={(e) => { setCancelOrderNum(e.target.value); setCancelError(""); }}
+                      placeholder="Ej: 4823"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-red-500/60 transition-colors"
+                    />
+                  </div>
+
+                  {cancelError && (
+                    <p className="text-xs text-red-400 font-medium">{cancelError}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 active:scale-95 transition-all cursor-pointer shadow-lg shadow-red-500/20 mt-1"
+                  >
+                    Solicitar cancelación
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
