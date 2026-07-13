@@ -110,9 +110,9 @@ export default function MenuScreen({
                   {items.map((item) => {
                     const qty = getQty(item.id);
                     return (
-                      <div key={item.id} className="bg-card rounded-2xl border border-border overflow-hidden flex h-24 shadow-sm hover:border-accent/20 transition-colors">
-                        <div className="w-24 h-24 flex-shrink-0 bg-muted">
-                          <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                      <div key={item.id} className="bg-card rounded-2xl border border-border overflow-hidden flex h-28 shadow-sm hover:border-accent/20 transition-colors">
+                        <div className="w-28 h-28 flex-shrink-0 bg-white flex items-center justify-center p-1">
+                          <img src={item.img} alt={item.name} className="w-full h-full object-contain" />
                         </div>
                         <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
                           <div>
