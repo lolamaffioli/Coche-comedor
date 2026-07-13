@@ -44,7 +44,7 @@ const menuMarDelPlata = {
   Cafeteria: [
     { id: 200, codigo: "200", name: "Adicional Leche",               desc: "Porción adicional de leche para el café, té o matecocido",            price: 1900, img: "/Comida/Cafeteria/Adicional leche (1).png" },
     { id: 201, codigo: "201", name: "Café",                          desc: "Café caliente, sin leche, 180ml",                           price: 2500, img: "/Comida/Cafeteria/Café.png" },
-    { id: 202, codigo: "202", name: "Sobre de Leche",                desc: "Sobre de leche en polvo",                        price: 2500, img: "/Comida/Cafeteria/Leche.png" },
+    { id: 202, codigo: "202", name: "Sobre de Leche",                desc: "Sobre de leche en polvo",                        price: 2500, img: "/Comida/Cafeteria/Leche en polvo.png" },
     { id: 203, codigo: "203", name: "Té",                            desc: "Infusión caliente de té, 240ml",                 price: 500,  img: "/Comida/Cafeteria/Té.png" },
     { id: 204, codigo: "204", name: "Leche Chocolatada",             desc: "Leche chocolatada, 240ml",                       price: 500,  img: "/Comida/Cafeteria/chocolatada.png" },
     { id: 205, codigo: "205", name: "Paquete de Yerba",              desc: "Paquete de yerba mate",                          price: 2000, img: "/Comida/Cafeteria/yerba.png" },
@@ -52,7 +52,7 @@ const menuMarDelPlata = {
     { id: 207, codigo: "207", name: "Vaso de Leche",                 desc: "Vaso de leche, 240ml",                  price: 2000, img: "/Comida/Cafeteria/Leche.png" },
     { id: 208, codigo: "208", name: "Leche para Mamadera",           desc: "Leche entera templada",                   price: 3500, img: "/Comida/Cafeteria/Leche para mamadera.png" },
     { id: 209, codigo: "209", name: "Medialunas con Jamón y Queso",  desc: "Medialunas rellenas de jamón y queso",           price: 3500, img: "/Comida/Cafeteria/Medialunas con jamon y queso.png" },
-    { id: 210, codigo: "210", name: "Medialunas de manteca",         desc: "2 Medialunas de manteca",             price: 3500, img: "/Comida/Cafeteria/Sanguche de miga.png" },
+    { id: 210, codigo: "210", name: "Medialunas de manteca",         desc: "2 Medialunas de manteca",             price: 3500, img: "/Comida/Cafeteria/Medialunas.png" },
     { id: 211, codigo: "211", name: "Fichas p/Expendedora",          desc: "Ficha para máquina expendedora de bebidas",      price: 500, img: "/Comida/Cafeteria/Fichas pmaquina.png" },
   ],
   Sandwicheria: [
@@ -179,7 +179,7 @@ const menuJunin = {
   Cafeteria: [
     { id: 200, codigo: "200", name: "Adicional Leche",               desc: "Porción adicional de leche para el café, té o matecocido",            price: 1900, img: "/Comida/Cafeteria/Adicional leche (1).png" },
     { id: 201, codigo: "201", name: "Café",                          desc: "Café caliente, sin leche, 180ml",                           price: 2500, img: "/Comida/Cafeteria/Café.png" },
-    { id: 202, codigo: "202", name: "Sobre de Leche",                desc: "Sobre de leche en polvo",                        price: 2500, img: "/Comida/Cafeteria/Leche.png" },
+    { id: 202, codigo: "202", name: "Sobre de Leche",                desc: "Sobre de leche en polvo",                        price: 2500, img: "/Comida/Cafeteria/Leche en polvo.png" },
     { id: 203, codigo: "203", name: "Té",                            desc: "Infusión caliente de té, 240ml",                 price: 500,  img: "/Comida/Cafeteria/Té.png" },
     { id: 204, codigo: "204", name: "Leche Chocolatada",             desc: "Leche chocolatada, 240ml",                       price: 500,  img: "/Comida/Cafeteria/chocolatada.png" },
     { id: 205, codigo: "205", name: "Paquete de Yerba",              desc: "Paquete de yerba mate",                          price: 2000, img: "/Comida/Cafeteria/yerba.png" },
@@ -245,7 +245,7 @@ const menuRosario = {
   Cafeteria: [
     { id: 200, codigo: "200", name: "Adicional Leche",               desc: "Porción adicional de leche para el café, té o matecocido",            price: 1900, img: "/Comida/Cafeteria/Adicional leche (1).png" },
     { id: 201, codigo: "201", name: "Café",                          desc: "Café caliente, sin leche, 180ml",                           price: 2500, img: "/Comida/Cafeteria/Café.png" },
-    { id: 202, codigo: "202", name: "Sobre de Leche",                desc: "Sobre de leche en polvo",                        price: 2500, img: "/Comida/Cafeteria/Leche.png" },
+    { id: 202, codigo: "202", name: "Sobre de Leche",                desc: "Sobre de leche en polvo",                        price: 2500, img: "/Comida/Cafeteria/Leche en polvo.png" },
     { id: 203, codigo: "203", name: "Té",                            desc: "Infusión caliente de té, 240ml",                 price: 500,  img: "/Comida/Cafeteria/Té.png" },
     { id: 204, codigo: "204", name: "Leche Chocolatada",             desc: "Leche chocolatada, 240ml",                       price: 500,  img: "/Comida/Cafeteria/chocolatada.png" },
     { id: 205, codigo: "205", name: "Paquete de Yerba",              desc: "Paquete de yerba mate",                          price: 2000, img: "/Comida/Cafeteria/yerba.png" },

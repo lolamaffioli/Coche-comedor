@@ -16,21 +16,21 @@ export const recorridos = [
   {
     id: 1,
     nombre: "Buenos Aires - Mar del Plata",
-    imagen: LOGO_TREN,
+    imagen: "/recorridos/mardel.jpg",
+  },
+  {
+    id: 2,
+    nombre: "Buenos Aires - Bragado",
+    imagen: "/recorridos/bragado.jpg",
   },
   {
     id: 3,
-    nombre: "Buenos Aires - Bragado",
-    imagen: LOGO_TREN,
+    nombre: "Buenos Aires - Junín",
+    imagen: "/recorridos/junin.jpg",
   },
   {
     id: 4,
-    nombre: "Buenos Aires - Junín",
-    imagen: LOGO_TREN,
-  },
-  {
-    id: 6,
     nombre: "Buenos Aires - Rosario",
-    imagen: LOGO_TREN,
+    imagen: "/recorridos/Rosario.jpg",
   },
 ];
