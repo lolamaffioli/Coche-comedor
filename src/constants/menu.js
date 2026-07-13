@@ -292,10 +292,10 @@ const menuRosario = {
 // Asocia cada ID de recorrido con su menú correspondiente.
 // ══════════════════════════════════════════════════════════════════════════════
 export const menuByRecorrido = {
-  1: clonarMenu(menuBaseConIds), // Recorrido 1 — Buenos Aires - Mar del Plata
-  2: clonarMenu(menuBaseConIds), // Recorrido 3 — Buenos Aires - Bragado
-  3: clonarMenu(menuBaseConIds), // Recorrido 4 — Buenos Aires - Junín
-  4: clonarMenu(menuBaseConIds), // Recorrido 6 — Buenos Aires - Rosario
+  1: menuMarDelPlata, // Buenos Aires → Mar del Plata
+  3: menuBragado,     // Buenos Aires → Bragado
+  4: menuJunin,       // Buenos Aires → Junín
+  6: menuRosario,     // Buenos Aires → Rosario
 };
 
 // Exportamos también el menú base (Mar del Plata) por compatibilidad con otros componentes
