@@ -93,7 +93,7 @@ const menuMarDelPlata = {
 
 
 // ──────────────────────────────────────────────────────────────────────────────
-// RECORRIDO 3 — Buenos Aires › Bragado
+// RECORRIDO 2 — Buenos Aires › Bragado
 // ──────────────────────────────────────────────────────────────────────────────
 // Para quitar un producto: comentá la línea con //
 // Para quitar toda una categoría: dejá el array vacío []
@@ -162,7 +162,7 @@ const menuBragado = {
 
 
 // ──────────────────────────────────────────────────────────────────────────────
-// RECORRIDO 4 — Buenos Aires › Junín
+// RECORRIDO 3 — Buenos Aires › Junín
 // ──────────────────────────────────────────────────────────────────────────────
 const menuJunin = {
   Bebidas: [
@@ -228,7 +228,7 @@ const menuJunin = {
 
 
 // ──────────────────────────────────────────────────────────────────────────────
-// RECORRIDO 6 — Buenos Aires › Rosario
+// RECORRIDO 4 — Buenos Aires › Rosario
 // ──────────────────────────────────────────────────────────────────────────────
 const menuRosario = {
   Bebidas: [
