@@ -100,12 +100,12 @@ export default function LandingPage() {
                 </div>
 
                 {/* Imagen del recorrido */}
-                <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-white/5 rounded-2xl p-2.5 mb-3 transition-transform duration-300 group-hover:scale-105">
+                <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-white/5 rounded-2xl overflow-hidden mb-3 transition-transform duration-300 group-hover:scale-105">
                   {r.imagen ? (
                     <img
                       src={r.imagen}
                       alt={r.nombre}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-2xl font-bold text-white/40">{r.id}</span>

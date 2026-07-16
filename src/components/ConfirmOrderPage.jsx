@@ -124,14 +124,19 @@ export default function ConfirmOrderPage() {
 
   // ── Pedido enviado con éxito ─────────────────────────────────
   if (status === "success") {
+    const oNum = orderData?.orderNumber;
     return (
       <Screen>
         <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center">
           <Check size={40} className="text-emerald-400" />
         </div>
         <h2 className="text-2xl font-bold text-white">¡Pedido enviado!</h2>
+        {oNum && (
+          <p className="text-amber-300 font-bold text-lg">Pedido N° #{oNum}</p>
+        )}
         <p className="text-white/80 text-sm text-center leading-relaxed">
-          Tu pedido fue enviado al personal del Coche Comedor. En breve se pondrán en contacto o lo recibirás en tu asiento.
+          Tu pedido fue enviado al personal del Coche Comedor. En breve se pondrán en contacto o lo recibirás en tu asiento.<br />
+          <span className="text-white font-medium block mt-3">¡Por favor, guardá este número hasta recibir tu pedido!</span>
         </p>
         <p className="text-white/40 text-xs text-center mt-1">⚠️ Recordá que el pago es presencial al recibir/retirar.</p>
         <button onClick={() => navigate("/")} className="mt-4 bg-white text-primary font-semibold text-sm px-6 py-3 rounded-xl shadow-lg hover:bg-white/90 active:scale-95 transition-all cursor-pointer">
@@ -168,7 +173,7 @@ export default function ConfirmOrderPage() {
   }
 
   // ── Vista principal: resumen + botón confirmar ────────────────
-  const { cart, delivery, cocheNumber, seatNumber, timeSlot, payment, cashAmount, totalPrice, recorridoName, clientEmail, expiresAt } = orderData;
+  const { cart, delivery, cocheNumber, seatNumber, timeSlot, payment, cashAmount, totalPrice, recorridoName, clientEmail, expiresAt, orderNumber } = orderData;
   const change = Number(cashAmount) - totalPrice;
 
   // Tiempo restante
@@ -183,6 +188,9 @@ export default function ConfirmOrderPage() {
         {/* Header */}
         <div className="px-6 py-6" style={{ background: "linear-gradient(135deg, #091f41 0%, #1a5a9e 100%)" }}>
           <h1 className="text-white font-bold text-xl mb-1">Confirmá tu pedido</h1>
+          {orderNumber && (
+            <p className="text-amber-300 font-bold text-base mb-1">Pedido N° #{orderNumber}</p>
+          )}
           <p className="text-white/70 text-sm">Revisá los detalles y confirmá para enviarlo al Coche Comedor.</p>
           {minutosRestantes !== null && (
             <div className="flex items-center gap-1.5 mt-3 bg-white/10 rounded-full px-3 py-1.5 w-fit">
@@ -226,6 +234,7 @@ export default function ConfirmOrderPage() {
           {/* Detalles de entrega */}
           <div className="bg-secondary rounded-2xl p-4 flex flex-col gap-1.5 border border-border/50">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Detalles</p>
+            {orderNumber && <Row label="Pedido N°" value={`#${orderNumber}`} />}
             <Row label="Recorrido" value={recorridoName} />
             <Row label="Entrega" value={delivery === "seat" ? `Coche ${cocheNumber} — Asiento ${seatNumber}` : `Retirar por barra (${timeSlot || "De inmediato"})`} />
             <Row label="Pago" value={payment === "cash" ? `Efectivo (con $${Number(cashAmount).toLocaleString()}, vuelto $${change >= 0 ? change.toLocaleString() : "0"})` : "Tarjeta Física"} />

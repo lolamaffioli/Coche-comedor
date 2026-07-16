@@ -1,5 +1,10 @@
-import { ChevronLeft, CreditCard, Banknote, Check, Mail, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, CreditCard, Banknote, Check, Mail, MapPin, Clock, Loader2 } from "lucide-react";
 import { timeSlots } from "../constants/menu";
+
+// URL base de la API — configurable por entorno (.env)
+const API_URL = import.meta.env.VITE_API_URL || "https://coche-comedor-api.onrender.com/api/v1";
+
 
 export default function CheckoutScreen({
   cart, delivery, setDelivery, payment, setPayment,
@@ -8,14 +13,70 @@ export default function CheckoutScreen({
   cashAmount, setCashAmount,
   clientEmail, setClientEmail,
 }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleConfirmOrder = async () => {
+    if (!canCheckout || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    // 1. Estructuramos el payload exactamente como lo requiere la API en Render
+    const pedidoPayload = {
+      numero_pedido: `#${Math.floor(1000 + Math.random() * 9000)}`,
+      cliente_email: clientEmail,
+      recorrido: "Buenos Aires - Bragado",
+      coche: delivery === "seat" ? `Coche ${cocheNumber}` : "Barra",
+      asiento: delivery === "seat" ? `Asiento ${seatNumber}` : `Franja ${timeSlot}`,
+      metodo_pago: payment === "cash" ? "Efectivo" : "Tarjeta",
+      paga_con: payment === "cash" ? (Number(cashAmount) || totalPrice) : totalPrice,
+      vuelto: payment === "cash" && Number(cashAmount) > totalPrice ? Number(cashAmount) - totalPrice : 0,
+      items: cart.map((item) => ({
+        codigo: item.codigo || "N/A",
+        nombre: item.name,
+        cantidad: item.qty,
+        precio: item.price,
+        caliente: item.caliente
+      })),
+      total: totalPrice
+    };
+
+    try {
+      // 2. Envíos del pedido al backend
+      const response = await fetch(`${API_URL}/pedidos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pedidoPayload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo registrar el pedido.");
+      }
+
+      // 3. Ejecutamos la función de éxito heredada del componente padre (onPlace)
+      if (onPlace) {
+        onPlace(data);
+      }
+    } catch (err) {
+      console.error("Error al enviar el pedido:", err);
+      setErrorMessage(err.message || "Ocurrió un error al conectar con el servidor.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col bg-card md:h-full md:overflow-y-auto pb-0">
-
 
       {/* Header */}
       <div className="px-5 pt-12 pb-5 flex-shrink-0" style={{ background: "linear-gradient(135deg, #091f41 0%, #1a5a9e 100%)" }}>
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center active:bg-white/25 transition-colors cursor-pointer flex-shrink-0">
+          <button onClick={onBack} disabled={isSubmitting} className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center active:bg-white/25 transition-colors cursor-pointer flex-shrink-0">
             <ChevronLeft size={18} className="text-white" />
           </button>
           <h2 className="text-white font-semibold text-lg">Confirmar Pedido</h2>
@@ -24,7 +85,6 @@ export default function CheckoutScreen({
 
       {/* Contenido */}
       <div className="flex-1 pb-4">
-
 
         {/* Order summary */}
         <div className="px-5 py-5 border-b border-border">
@@ -77,7 +137,7 @@ export default function CheckoutScreen({
           </p>
         </div>
 
-        {/* Forma de entrega y sus opciones específicas */}
+        {/* Forma de entrega */}
         <div className="px-5 py-5 border-b border-border">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Forma de entrega</p>
           <div className="grid grid-cols-2 gap-2 mb-4">
@@ -109,7 +169,7 @@ export default function CheckoutScreen({
             </button>
           </div>
 
-          {/* Detalles dinámicos según selección */}
+          {/* Detalles según selección */}
           {delivery === "seat" && (
             <div className="flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-2">
@@ -210,15 +270,36 @@ export default function CheckoutScreen({
         </div>
       </div>
 
-      {/* Botón de Confirmar Pedido (sticky bottom-0, se acopla arriba del footer al final del scroll) */}
+      {/* Cartelito de error si falla la API */}
+      {errorMessage && (
+        <div className="px-5 pb-2">
+          <p className="text-xs text-rose-500 font-semibold bg-rose-500/10 p-3 rounded-xl text-center border border-rose-500/20">
+            ⚠️ {errorMessage}
+          </p>
+        </div>
+      )}
+
+      {/* Botón de Confirmar Pedido */}
       <div className="sticky bottom-0 left-0 right-0 z-40 px-5 pb-6 pt-3 bg-background/95 backdrop-blur-sm border-t border-border flex-shrink-0">
         <button
-          onClick={canCheckout ? onPlace : undefined}
-          className={`w-full bg-primary text-white rounded-xl py-4 font-semibold text-sm active:scale-[0.98] transition-all cursor-pointer shadow-2xl ${
-            canCheckout ? "" : "opacity-60 cursor-not-allowed"
+          onClick={canCheckout && !isSubmitting ? handleConfirmOrder : undefined}
+          disabled={!canCheckout || isSubmitting}
+          className={`w-full bg-primary text-white rounded-xl py-4 font-semibold text-sm transition-all shadow-2xl flex items-center justify-center gap-2 ${
+            canCheckout && !isSubmitting
+              ? "active:scale-[0.98] cursor-pointer"
+              : "opacity-60 cursor-not-allowed"
           }`}
         >
-          {canCheckout ? `Confirmar pedido · $${totalPrice.toLocaleString()}` : "Completá tus datos para continuar"}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin" size={18} />
+              <span>Procesando pedido...</span>
+            </>
+          ) : canCheckout ? (
+            `Confirmar pedido · $${totalPrice.toLocaleString()}`
+          ) : (
+            "Completá tus datos para continuar"
+          )}
         </button>
       </div>
     </div>
