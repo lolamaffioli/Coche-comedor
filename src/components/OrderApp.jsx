@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Flame } from "lucide-react";
+import { Mail, Flame, Loader2, WifiOff } from "lucide-react";
 import MenuScreen from "./MenuScreen";
 import CheckoutScreen from "./CheckoutScreen";
 import { menuByRecorrido } from "../constants/menu";
 import { recorridos } from "../constants/recorridos";
 import { sendClientConfirmationEmail } from "../services/email";
+import { obtenerMenuAPI } from "../services/productos";
+
 
 export default function OrderApp() {
   const { id } = useParams();
@@ -16,11 +18,70 @@ export default function OrderApp() {
   const recorridoName = recorrido ? recorrido.nombre : "Recorrido";
 
   const initialDelivery = searchParams.get("delivery");
-  const menuItems = menuByRecorrido[Number(id)] ?? menuByRecorrido[1];
+  // Menú estático como fallback si la API no responde
+  const staticMenuItems = menuByRecorrido[Number(id)] ?? menuByRecorrido[1];
 
   const initialScreen = searchParams.get("screen") || "menu";
   const [screen, setScreen] = useState(initialScreen);
   const [category, setCategory] = useState("Bebidas");
+
+  // ── Estado del menú cargado desde la API ──────────────────────────────────
+  const [apiMenuItems, setApiMenuItems] = useState(null); // null = aún no cargó
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [menuError, setMenuError] = useState(false);
+
+  // Carga el menú desde la API al montar el componente
+  useEffect(() => {
+    let cancelled = false;
+    setMenuLoading(true);
+    setMenuError(false);
+
+    obtenerMenuAPI()
+      .then((productos) => {
+        if (cancelled) return;
+
+        if (!productos || productos.length === 0) {
+          // La BD está vacía — usamos el menú estático
+          setApiMenuItems(null);
+          setMenuError(false);
+        } else {
+          // Normalizar nombres de columna de la BD al formato que espera MenuScreen
+          // La BD usa: nombre, descripcion, precio, imagen, categoria
+          // El componente espera: name, desc, price, img, category
+          const grouped = {};
+          productos.forEach((p) => {
+            const cat = p.categoria || p.category || "Otros";
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push({
+              id: p.id,
+              codigo: p.codigo || String(p.id),
+              name: p.nombre || p.name,
+              desc: p.descripcion || p.desc || "",
+              price: Number(p.precio ?? p.price ?? 0),
+              img: p.imagen || p.img || "",
+              category: cat,
+              disponible: p.disponible !== false,
+              stock: p.stock ?? 99,
+            });
+          });
+          setApiMenuItems(grouped);
+        }
+        setMenuLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.warn("⚠️ No se pudo cargar el menú desde la API. Usando menú estático.", err.message);
+        setApiMenuItems(null);
+        setMenuError(true);
+        setMenuLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [id]);
+
+  // El menú efectivo: API si cargó bien, estático si falló o está vacío
+  const menuItems = apiMenuItems ?? staticMenuItems;
+
   const [cart, setCart] = useState(() => {
     try {
       const stored = localStorage.getItem(`cart-${id}`);
@@ -148,6 +209,19 @@ export default function OrderApp() {
       ? cashAmount.trim() !== "" && Number(cashAmount) >= totalPrice
       : true);
 
+  // ── Pantalla de carga mientras se obtiene el menú de la API ───────────────
+  if (menuLoading) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center gap-5"
+        style={{ background: "linear-gradient(135deg, #091f41 0%, #1a5a9e 100%)", fontFamily: "Outfit, sans-serif" }}
+      >
+        <Loader2 size={44} className="text-white animate-spin" />
+        <p className="text-white/70 text-sm">Cargando menú…</p>
+      </div>
+    );
+  }
+
   // ── Pantalla de Confirmación Simplificada ──────────────────────────────────
   if (orderPlaced) {
     return (
@@ -203,6 +277,14 @@ export default function OrderApp() {
       }}
     >
       <div className="w-full max-w-[1024px] rounded-none md:rounded-3xl shadow-2xl shadow-black/50 md:h-[80vh] md:overflow-hidden flex flex-col md:flex-row relative bg-background">
+        {/* Banner de fallback cuando la API no responde */}
+        {menuError && (
+          <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-2 bg-amber-500/90 backdrop-blur-sm px-4 py-2 text-white text-xs font-medium">
+            <WifiOff size={13} className="flex-shrink-0" />
+            <span>Menú estático — no se pudo conectar con el servidor. Los precios pueden no estar actualizados.</span>
+          </div>
+        )}
+
         {/* Left Column: Menu */}
         <div
           className={`flex-1 flex flex-col md:overflow-hidden ${
