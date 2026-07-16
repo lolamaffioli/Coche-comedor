@@ -100,7 +100,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Imagen del recorrido */}
-                <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-white/5 rounded-2xl overflow-hidden mb-3 transition-transform duration-300 group-hover:scale-105">
+                <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-white/5 rounded-2xl overflow-hidden mb-3 transition-transform duration-300 group-hover:scale-15">
                   {r.imagen ? (
                     <img
                       src={r.imagen}
